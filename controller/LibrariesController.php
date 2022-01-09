@@ -1,48 +1,127 @@
 <?php
-    require_once 'config/dbConfig.php';
+   require_once 'model/LibrariesModel.php';
+   class LibrariesController{ 
+    function index(){
+        $bdModal = new LibrariesModel();
+        $bdonor = $bdModal->getAllUsers();
+        require_once 'view/Libraries/index.php';
 
-    class LibrariesModel{
-        private $madg;
-        private $hovaten;
-        private $namsinh;
-        private $nghenghiep;
-        private $ngaycapthe;
-        private $ngayhethan;
-        private $diachi;
-
-
-        // Định nghĩa các phương thức để sau này nhận các thao tác tương ứng với các action
-        public function getAllUsers(){
-            // B1. Khởi tạo kết nối
-            $conn = $this->connectDb();
-            // B2. Định nghĩa và thực hiện truy vấn
-            $sql = "SELECT * FROM docgia";
-            $result = mysqli_query($conn,$sql);
-
-            // Tôi khai báo biến lưu kết quả trả về (dạng mảng)
-            $arr_users = [];
-            // B3. Xử lý và (KO PHẢI SHOW KẾT QUẢ) TRẢ VỀ KẾT QUẢ
-            if(mysqli_num_rows($result) > 0){
-                // Lấy tất cả dùng mysqli_fetch_all
-                $arr_users = mysqli_fetch_all($result, MYSQLI_ASSOC); //Sử dụng MYSQLI_ASSOC để chỉ định lấy kết quả dạng MẢNG KẾT HỢP
-            }
-
-            return $arr_users;
-        }
-
-        public function connectDb() {
-            $connection = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
-            if (!$connection) {
-                die("Không thể kết nối. Lỗi: " .mysqli_connect_error());
-            }
-    
-            return $connection;
-        }
-    
-        public function closeDb($connection = null) {
-            mysqli_close($connection);
-        }
     }
+    function admin(){
+        $bdModal = new LibrariesModel();
+        $bdonor = $bdModal->getAllUsers();
+        require_once 'view/Libraries/admin.php';
+    }
+    function edit(){
+        if (!isset($_GET['madg'])) {
+            $_SESSION['error'] = "Tham số không hợp lệ";
+            header("Location: index.php?controller=book&action=admin");
+            return;
+        }
+        if (!is_numeric($_GET['madg'])) {
+            $_SESSION['error'] = "Id phải là số";
+            header("Location: index.php?controller=book&action=admin");
+            return;
+        }
+        $id = $_GET['madg'];
+        $bdModal = new LibrariesModel();
+        $BD = $bdModal->getBDById($id);
+        $error = '';
+        if (isset($_POST['submit'])) {
+            $hovaten = $_POST['hovaten'];
+            $namsinh = $_POST['namsinh'];
+            $nghenghiep = $_POST['nghenghiep'];
+            $ngaycapthe = $_POST['ngaycapthe'];
+            $ngayhethan = $_POST['ngayhethan'];
+            $diachi = $_POST['diachi'];
+            if(empty($hovaten) || empty($_POST['gioitinh'])|| empty($namsinh) || empty($nghenghiep) || empty($ngaycapthe) || empty($ngayhethan)|| empty($diachi)){
+                $error = 'Thông tin chưa đầy đủ!';
+            }
+            else {
+                
+                //xử lý update dữ liệu vào hệ thống
+                $gioitinh = $_POST['gioitinh'];
+                $bdArr = [
+                    'madg' => $id,
+                    'hovaten' => $hovaten,
+                    'gioitinh' => $gioitinh,
+                    'namsinh' => $namsinh,
+                    'nghenghiep' =>$nghenghiep,
+                    'ngaycapthe' => $ngaycapthe,
+                    'ngayhethan' => $ngayhethan,
+                    'diachi' => $diachi,
+                ];
+                $isAdd = $bdModal->update($bdArr);
 
+                if ($isAdd) {
+                    $TT= "Sửa thành công";
+                }
+                else {
+                    $TT = "Sửa thất bại";
+                }
+                header("Location: index.php?controller=libraries&action=admin&tt=$TT");
+                exit();
+            }
+        }
+        require_once 'view/Libraries/edit.php';
+    }
+    function add(){
+        $error = '';
+        if(isset($_POST['submit'])){
+            $hovaten = $_POST['hovaten'];
+            $namsinh = $_POST['namsinh'];
+            $nghenghiep = $_POST['nghenghiep'];
+            $ngaycapthe = $_POST['ngaycapthe'];
+            $ngayhethan = $_POST['ngayhethan'];
+            $diachi = $_POST['diachi'];
+            if(empty($hovaten) || empty($_POST['gioitinh'])|| empty($namsinh) || empty($nghenghiep) || empty($ngaycapthe) || empty($ngayhethan) || empty($diachi)){
+                $error = 'Thông tin chưa đầy đủ!';
+            }else{
+                $gioitinh = $_POST['gioitinh'];
+                $bdModal = new LibrariesModel();
+                $bdArr = [
+                    'madg' => $id,
+                    'hovaten' => $hovaten,
+                    'gioitinh' => $gioitinh,
+                    'namsinh' => $namsinh,
+                    'nghenghiep' =>$nghenghiep,
+                    'ngaycapthe' => $ngaycapthe,
+                    'ngayhethan' => $ngayhethan,
+                    'diachi' => $diachi,
+                ];
+                $isAdd = $bdModal->insert($bdArr);
+                if ($isAdd) {
+                    $TT=  "Thêm mới thành công";
+                }
+                else {
+                    $TT= "Thêm mới thất bại";
+                }
+                header("Location: index.php?controller=libraries&action=admin&tt=$TT");
+                exit();
+            }
 
+        }
+        require_once 'view/Libraries/add.php';
+    }
+    function delete(){
+        $madg = $_GET['madg'];
+        if (!is_numeric($madg)) {
+            header("Location: index.php?controller=libraries&action=index");
+            exit();
+        }
+        $bdModal = new LibrariesModel();
+        $isDelete = $bdModal->delete($madg);
+        if ($isDelete) {
+            //chuyển hướng về trang liệt kê danh sách
+            //tạo session thông báo mesage
+            $TT=  "Xóa bản ghi thành công";
+        }
+        else {
+            //báo lỗi
+            $TT = "Xóa bản ghi thất bại";
+        }
+        header("Location: index.php?controller=libraries&action=admin&tt=$TT");
+        exit();
+    }
+}
 ?>

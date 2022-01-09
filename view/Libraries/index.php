@@ -1,5 +1,5 @@
 <?php
-    require 'src/template/header.php'
+    require 'view/template/header.php'
 ?>
 <main>
     <div class="container">
@@ -8,7 +8,7 @@
                 <h3>Danh Sách Chi Tiết Độc Giả</h3>
             </div>
             <div class="col-md-12 mb-3">
-                <a href="index.php?controller=user&action=index"><button class="btn btn-primary">Xem chi tiết</button></a>
+                <a href="index.php?controller=libraries&action=admin"><button class="btn btn-primary">Xem chi tiết</button></a>
             </div>
             <div class="col-md-12">
                 <table class="table">
@@ -26,7 +26,7 @@
                     </thead>
                     <tbody>
                     <?php
-                        foreach ($row) {
+                        foreach ($bdonor as $row) {
                     ?>
                             <tr>
                                 <th scope="row"><?php echo $row['madg'] ?></th>
@@ -49,5 +49,5 @@
 </main>
 
 <?php
-    require 'src/template/footer.php'
+    require 'view/template/footer.php'
 ?>

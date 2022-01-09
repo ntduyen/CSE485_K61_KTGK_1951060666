@@ -1,6 +1,6 @@
 <?php
     
-    $controller = isset($_GET['controller']) ? $_GET['controller'] : 'user';
+    $controller = isset($_GET['controller']) ? $_GET['controller'] : 'libraries';
     //lấy ra action
     $action     = isset($_GET['action']) ? $_GET['action'] : 'index';
     
@@ -9,7 +9,7 @@
   
     $fileController = $controller . "Controller.php"; //Tên tệp tin muốn truy xuất
 
-    $pathController = "libraries/$fileController"; //Đường dẫn đầy đủ tới tệp tin Controller muốn truy xuất
+    $pathController = "controller/$fileController"; //Đường dẫn đầy đủ tới tệp tin Controller muốn truy xuất
 
     if (!file_exists($pathController)) {
         die("Trang bạn tìm không tồn tại"); //Nếu đoạn này xảy ra, chương trình dừng thực hiện
