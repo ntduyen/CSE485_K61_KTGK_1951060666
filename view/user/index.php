@@ -8,7 +8,7 @@
                 <h3>Danh Sách Chi Tiết Độc Giả</h3>
             </div>
             <div class="col-md-12 mb-3">
-                <a href="index.php?controller=blooddonor&action=admin"><button class="btn btn-primary">Xem chi tiết</button></a>
+                <a href="index.php?controller=user&action=index"><button class="btn btn-primary">Xem chi tiết</button></a>
             </div>
             <div class="col-md-12">
                 <table class="table">
@@ -26,17 +26,7 @@
                     </thead>
                     <tbody>
                     <?php
-                  
-                        $conn = mysqli_connect('localhost','root','','1951060666_libraries');
-                        if(!$conn){
-                            die("Kết nối thất bại. Vui lòng kiểm tra lại các thông tin máy chủ");
-                        }
-                  
-                        $sql = "SELECT madg, hovaten, gioitinh, namsinh, nghenghiep, ngaycapthe, ngayhethan, diachi FROM docgia ";
-                        $result = mysqli_query($conn,$sql);
-                    
-                        if(mysqli_num_rows($result) > 0){
-                         while($row = mysqli_fetch_assoc($result)){
+                        foreach ($row) {
                     ?>
                             <tr>
                                 <th scope="row"><?php echo $row['madg'] ?></th>
